@@ -7,15 +7,11 @@ using System.Threading.Tasks;
 
 namespace RawWebSockets.Common
 {
-    public class WebSocketService
+    public static class WebSocketExtensions
     {
         private const int _bufferSize = 1024 * 4;
 
-        public WebSocketService()
-        {
-        }
-
-        public async Task<string> ReceiveAsync(WebSocket webSocket, CancellationToken cancellationToken)
+        public static async Task<string> ReceiveAsync(this WebSocket webSocket, CancellationToken cancellationToken)
         {
             var messageBytes = new List<byte>();
             var bufferBytes = new byte[_bufferSize];
@@ -45,7 +41,7 @@ namespace RawWebSockets.Common
             return message;
         }
 
-        public async Task SendAsync(WebSocket webSocket, string message, CancellationToken cancellationToken)
+        public static async Task SendAsync(this WebSocket webSocket, string message, CancellationToken cancellationToken)
         {
             var messageBytes = Encoding.UTF8.GetBytes(message);
 

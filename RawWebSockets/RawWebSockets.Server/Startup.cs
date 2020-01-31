@@ -13,8 +13,6 @@ namespace RawWebSockets.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddLogging(builder => builder.AddConsole());
-
-            services.AddTransient<WebSocketService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

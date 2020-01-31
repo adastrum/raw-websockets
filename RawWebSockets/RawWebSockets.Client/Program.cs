@@ -17,16 +17,14 @@ namespace RawWebSockets.Client
 
             await clientWebSocket.ConnectAsync(uri, cancellationToken);
 
-            var webSocketService = new WebSocketService();
-
             await Task.WhenAll
             (
-                SendAsync(clientWebSocket, webSocketService, cancellationToken),
-                ReceiveAsync(clientWebSocket, webSocketService, cancellationToken)
+                SendAsync(clientWebSocket, cancellationToken),
+                ReceiveAsync(clientWebSocket, cancellationToken)
             );
         }
 
-        private static async Task SendAsync(ClientWebSocket clientWebSocket, WebSocketService webSocketService, CancellationToken cancellationToken)
+        private static async Task SendAsync(ClientWebSocket clientWebSocket, CancellationToken cancellationToken)
         {
             while (true)
             {
@@ -39,15 +37,15 @@ namespace RawWebSockets.Client
                     return;
                 }
 
-                await webSocketService.SendAsync(clientWebSocket, message, cancellationToken);
+                await clientWebSocket.SendAsync(message, cancellationToken);
             }
         }
 
-        private static async Task ReceiveAsync(ClientWebSocket clientWebSocket, WebSocketService webSocketService, CancellationToken cancellationToken)
+        private static async Task ReceiveAsync(ClientWebSocket clientWebSocket, CancellationToken cancellationToken)
         {
             while (true)
             {
-                var message = await webSocketService.ReceiveAsync(clientWebSocket, cancellationToken);
+                var message = await clientWebSocket.ReceiveAsync(cancellationToken);
 
                 if (string.IsNullOrWhiteSpace(message))
                 {
