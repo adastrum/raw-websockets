@@ -10,11 +10,13 @@ namespace RawWebSockets.Server
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<WebSocketMiddleware> _logger;
+        private readonly IWebSocketConnectionManager _webSocketConnectionManager;
 
-        public WebSocketMiddleware(RequestDelegate next, ILogger<WebSocketMiddleware> logger)
+        public WebSocketMiddleware(RequestDelegate next, ILogger<WebSocketMiddleware> logger, IWebSocketConnectionManager webSocketConnectionManager)
         {
             _next = next;
             _logger = logger;
+            _webSocketConnectionManager = webSocketConnectionManager;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -26,6 +28,8 @@ namespace RawWebSockets.Server
 
                 var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
+                _webSocketConnectionManager.AddConnection(clientId, webSocket);
+
                 var cancellationToken = context.RequestAborted;
 
                 string message;
@@ -35,6 +39,8 @@ namespace RawWebSockets.Server
 
                     await HandleMessageAsync(message, cancellationToken);
                 } while (!string.IsNullOrWhiteSpace(message));
+
+                await _webSocketConnectionManager.CloseConnectionAsync(clientId);
             }
             else
             {
